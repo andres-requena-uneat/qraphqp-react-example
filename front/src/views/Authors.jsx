@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import '../styles/authors.scss'
 import axios from 'axios'
 import { 
     Table,
@@ -44,51 +45,55 @@ const Authors = () => {
     return (
         <>
             <h2>List of authors</h2>
-            <Menu>
-                <MenuTrigger disableButtonEnhancement>
-                    <Button icon={<Filter24Regular />} />
-                </MenuTrigger>
-                <MenuPopover>
-                    <MenuList
-                        checkedValues={{columns: filteredColumnLabels}}
-                        onCheckedValueChange={(e, {name, checkedItems}) => {
-                            const newColumns = columns.map(column => ({
-                                ...column,
-                                show: checkedItems.includes(column.label)
-                            }));
-                            setColumns(newColumns);
-                        }}>
-                        {columns.map(column => (
-                            <MenuItemCheckbox key={column.label} name="columns" value={column.label}>
-                                {column.label}
-                            </MenuItemCheckbox>
-                        ))}
-                    </MenuList>
-                </MenuPopover>
-            </Menu>
+            <div
+                className="tableHeaderFilterButton"
+            >
+                <Menu>
+                    <MenuTrigger disableButtonEnhancement>
+                        <Button icon={<Filter24Regular />} />
+                    </MenuTrigger>
+                    <MenuPopover>
+                        <MenuList
+                            checkedValues={{columns: filteredColumnLabels}}
+                            onCheckedValueChange={(e, {name, checkedItems}) => {
+                                const newColumns = columns.map(column => ({
+                                    ...column,
+                                    show: checkedItems.includes(column.label)
+                                }));
+                                setColumns(newColumns);
+                            }}>
+                            {columns.map(column => (
+                                <MenuItemCheckbox key={column.label} name="columns" value={column.label}>
+                                    {column.label}
+                                </MenuItemCheckbox>
+                            ))}
+                        </MenuList>
+                    </MenuPopover>
+                </Menu>
 
-            <Table size="small" aria-label="Table with small size">
-                <TableHeader>
-                    <TableRow>
-                        {columns.filter(column => column.show).map(column => (
-                            <TableHeaderCell key={column.columnKey}>
-                                <h4>{column.label}</h4>
-                            </TableHeaderCell>
-                        ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {authors.map(author => (
-                        <TableRow key={author.id}>
-                            {filteredColumns.map(col => (
-                                <TableCell key={col}>
-                                    {author[col] || "-"}
-                                </TableCell>
+                <Table size="small" aria-label="Table with small size">
+                    <TableHeader>
+                        <TableRow>
+                            {columns.filter(column => column.show).map(column => (
+                                <TableHeaderCell key={column.columnKey}>
+                                    <h4>{column.label}</h4>
+                                </TableHeaderCell>
                             ))}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {authors.map(author => (
+                            <TableRow key={author.id}>
+                                {filteredColumns.map(col => (
+                                    <TableCell key={col}>
+                                        {author[col] || "-"}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
         </>
     )
 }
