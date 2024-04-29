@@ -1,23 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import '../styles/authors.scss'
 import axios from 'axios'
-import { 
-    Table,
-    TableHeader,
-    TableRow,
-    TableHeaderCell,
-    TableBody,
-    TableCell,
-    Button,
-    Menu,
-    MenuTrigger,
-    MenuPopover,
-    MenuList,
-    MenuItemCheckbox,
-} from "@fluentui/react-components";
-import {
-     Filter24Regular,
-} from "@fluentui/react-icons";
 import FilterableTable from "../components/FilterableTable";
 
 const Authors = () => {
@@ -41,7 +24,7 @@ const Authors = () => {
     }
 
     const getAllAuthors = async () => {
-        const response = await axios.post("http://localhost:4000/", {
+        const response = await axios.post(import.meta.env.VITE_BACK_URL, {
             query: "query Query { allAuthors { name id born bookCount } }"
         });
         setAuthors(response.data.data.allAuthors);
@@ -53,6 +36,7 @@ const Authors = () => {
 
     return (
         <>
+            <h2>List of authors</h2>
             <FilterableTable 
                 title="List of Authors"
                 filterable={true}
