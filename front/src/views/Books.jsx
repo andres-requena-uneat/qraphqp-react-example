@@ -46,7 +46,7 @@ const Books = () => {
     }
 
     const getAllBooks = async () => {
-        const response = await axios.post("http://localhost:4000/", {
+        const response = await axios.post(import.meta.env.VITE_BACK_URL, {
             query: "query AllBooks { allBooks { title published author id genres } }"
         })
         .then(response => response.data.data.allBooks.map(book => {
@@ -59,10 +59,20 @@ const Books = () => {
     }
 
     const addBook = async () => {
-        const response = await axios.post("http://localhost:4000/", {
-            query: `mutation { addBook(title: "${newBook.title}", author: "${newBook.author}", published: ${newBook.published}, genres: ${newBook.genres}) { id title author published genres } }`
+
+        let title = newBook.title
+        let author = newBook.author
+        let published = newBook.published
+        let genres = newBook.genres.map(genre => `"${genre}"`).join(", ")
+
+        await axios.post(import.meta.env.VITE_BACK_URL, {
+            query: `mutation { addBook( title: "${title}", author: "${author}", published: ${published}, genres: [${genres}]) { title, author } }`
         })
+
+        await getAllBooks()
+        .then(handleModal)
     }
+    const handleModal = () => setOpenModal(!openModal)
 
     useEffect(() => {
         getAllBooks();
@@ -70,8 +80,8 @@ const Books = () => {
 
     return (
         <>
-            <FilterableTable 
-                title="List of Books"
+            <h2>List of books</h2>
+            <FilterableTable
                 filterable={true}
                 columns={columns}
                 data={books}
@@ -79,9 +89,9 @@ const Books = () => {
                 filteredColumnLabels={filteredColumnLabels}
                 onCheckedValueChange={onCheckedValueChange}
             />
-            <Button onClick={() => {setOpenModal(!openModal); console.log(openModal)}}>Lets goooo</Button>
+            <Button onClick={handleModal}>Add book</Button>
 
-            <Dialog open={openModal} onOpenChange={() => setOpenModal(false)}>
+            <Dialog open={openModal} onOpenChange={handleModal}>
                 <DialogSurface>
                 <DialogBody>
                     <DialogTitle>Add a book</DialogTitle>
@@ -111,7 +121,7 @@ const Books = () => {
                             required
                         >
                             <Input
-                                type="search"
+                                type="number"
                                 value={newBook.published}
                                 onChange={(e, data) => setNewBook({...newBook, published: data.value})}
                             />
@@ -127,15 +137,12 @@ const Books = () => {
                                 onChange={(e, data) => setNewBook({...newBook, genres: data.value.split(",")})}
                             />
                         </Field>
-
-
-
                     </DialogContent>
                     <DialogActions>
                     <DialogTrigger disableButtonEnhancement>
                         <Button appearance="secondary">Close</Button>
                     </DialogTrigger>
-                    <Button appearance="primary" onClick={() => addBook()}>Add</Button>
+                    <Button appearance="primary" onClick={async () => addBook()}>Add</Button>
                     </DialogActions>
                 </DialogBody>
                 </DialogSurface>
